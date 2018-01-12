@@ -31,9 +31,30 @@ app.use(express.static("public"));
 // Set mongoose to leverage built in JavaScript ES6 Promises
 // Connect to the Mongo DB
 mongoose.Promise = Promise;
-mongoose.connect("mongodb://localhost/wnt", {
-    useMongoClient: true
+
+var databaseUri = 'mongodb://localhost/wnt';
+if (process.env.MONGODB_URI) {
+    mongoose.connect(process.env.MONGODB_URI);
+}
+else {
+    mongoose.connect(databaseUri);
+}
+
+var dbConection = mongoose.connection;
+
+dbConection.on('error', function(err) {
+    console.log('Mongoose Error: ', err);
 });
+
+dbConection.once('open', function() {
+    console.log('Mongoose connection successful.');
+});
+
+
+// mongoose.connect("mongodb://localhost/wnt", {
+//     useMongoClient: true
+// });
+
 
 //ROUTES
 //==============================================================================
